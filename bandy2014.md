@@ -4,7 +4,27 @@
 _Howard Bandy_
 
 # Chapter 01. Introduction
-This book is about trading using quantitative techniques together with technical analysis.
+This book is about trading using quantitative techniques together with technical analysis. Our product will be a profitable trading system. Our process will be designing and verifying the system, them monitoring its performance and determining the maximum safe position size. Our metrics will be account growth, normalized for risk. 
+
+A trading system is a combination of a model and some data. The primary data series is a time-ordered sequence of quotations. Each quotation represents the price of the issue being traded. 
+
+The model accepts the data. The purpose of the model is to recognize patterns that precede profitable trading opportunities. The purpose of a trading system is to recognize an inefficiency in price, then make trades that capture that inefficiency.
+
+**The markets are very nearly efficient**. Every successful trade removes some inefficiency and makes future profitability less likely. Trades can be categorized according to the amount of change from entry to exit, or the amount of time they are held. Over a period of time, there are only a few profitable trades for any given trade profile. Everyone developing systems that will hold trades for one to five days or one to two percent will locate the same profitable trades no matter what pattern or entry technique they are using.
+
+>Every trade is a trend following trade. No matter how the entry is made, the price must change in the direction predicted in order for the system to be profitable. 
+
+The output from the model is a list of trades for the time period being tested, together with a summary of performance. The list of trades, in time sequence, that results from processing a data series that is similar to future data, is the best estimate we can obtain of reality.
+
+A distribution can be formed using any of the metrics of the individual trades. For example, a distribution of percentage gain per trade. **The techniques discussed in this book extend the concept of stationarity to whatever metric is being analyzed.**
+
+The model specifies the logic. A trading system is profitable as long as the logic identifies patterns in the data that precede profitable trading opportunities. That is, **as long as the logic and data remain synchronized.**. The logic of a typical trading system is relatively fixed. The data change. **As the data changes, the patterns in the data move in and out of synchronization with the logic.** During periods of close synchronization, the system is healthy and large positions may safely be taken. As synchronization weakens, position size must be reduced. 
+
+Just as we cannot expect different models to be equally effective for a given data series, we cannot expect a given model to be equally effective applied to different data series. **If one model does work for a wide range of data, that is a plus. But it is not a requirement.** 
+
+The trading system that results from the design, testing, and validation provides a single set of trades with single mean, single standard deviation, single terminal wealth, single maximum drawdown. These results will be repeated as the system is traded only if future prices are exactly the same as the historical series used during development. In order to estimate profit potential and risk it is important to consider the distribution of potential results.
+
+The model does not include any position sizing - that is handled in trading management. The trading management sections of this book discuss a new and unique technique, _dynamic position sizing_, and introduce a new metric of system health, _safe-f_.
 
 # Chapter 02. Risk and Risk Tolerance
 Risk is the risk of drawdown in the balance of the account.
