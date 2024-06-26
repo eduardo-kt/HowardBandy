@@ -4,8 +4,10 @@
 _Howard Bandy_
 
 # Chapter 01. Introduction
+This book is about trading using quantitative techniques together with technical analysis.
 
-# C02
+# Chapter 02. Risk and Risk Tolerance
+Risk is the risk of drawdown in the balance of the account.
 
 # C03
 
