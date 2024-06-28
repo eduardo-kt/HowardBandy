@@ -4,42 +4,90 @@
 _Howard Bandy_
 
 # Chapter 01. Introduction
-This book is about trading using quantitative techniques together with technical analysis. Our product will be a profitable trading system. Our process will be designing and verifying the system, them monitoring its performance and determining the maximum safe position size. Our metrics will be account growth, normalized for risk. 
+This book is about trading using quantitative techniques together with technical analysis.
+* Our product will be a profitable trading system.
+* Our process will be designing and verifying the system, them monitoring its performance and determining the maximum safe position size.
+* Our metrics will be account growth, normalized for risk. 
 
-A trading system is a combination of a model and some data. The primary data series is a time-ordered sequence of quotations. Each quotation represents the price of the issue being traded. 
 
-The model accepts the data. The purpose of the model is to recognize patterns that precede profitable trading opportunities. The purpose of a trading system is to recognize an inefficiency in price, then make trades that capture that inefficiency.
+The purpose of a trading system is to recognize an inefficiency in price, then make trades that capture that inefficiency. A trading system is a combination of a model and some data. The primary data series is a time-ordered sequence of prices of the issue being traded. The model is a logic which try to recognize patterns that precede profitable trading opportunities. 
 
-**The markets are very nearly efficient**. Every successful trade removes some inefficiency and makes future profitability less likely. Trades can be categorized according to the amount of change from entry to exit, or the amount of time they are held. Over a period of time, there are only a few profitable trades for any given trade profile. Everyone developing systems that will hold trades for one to five days or one to two percent will locate the same profitable trades no matter what pattern or entry technique they are using.
-
->Every trade is a trend following trade. No matter how the entry is made, the price must change in the direction predicted in order for the system to be profitable. 
+A trading system is profitable as long as the logic applied to the data returns profit. That is, **as long as the logic and data remain synchronized.**. The logic of a typical trading system is relatively fixed while data is variable. **As the data changes, the patterns in the data move in and out of synchronization with the logic.** During periods of close synchronization, the system is healthy and large positions may safely be taken. As synchronization weakens, position size must be reduced. 
 
 The output from the model is a list of trades for the time period being tested, together with a summary of performance. The list of trades, in time sequence, that results from processing a data series that is similar to future data, is the best estimate we can obtain of reality.
 
-A distribution can be formed using any of the metrics of the individual trades. For example, a distribution of percentage gain per trade. **The techniques discussed in this book extend the concept of stationarity to whatever metric is being analyzed.**
-
-The model specifies the logic. A trading system is profitable as long as the logic identifies patterns in the data that precede profitable trading opportunities. That is, **as long as the logic and data remain synchronized.**. The logic of a typical trading system is relatively fixed. The data change. **As the data changes, the patterns in the data move in and out of synchronization with the logic.** During periods of close synchronization, the system is healthy and large positions may safely be taken. As synchronization weakens, position size must be reduced. 
-
-Just as we cannot expect different models to be equally effective for a given data series, we cannot expect a given model to be equally effective applied to different data series. **If one model does work for a wide range of data, that is a plus. But it is not a requirement.** 
+Trades can be categorized according to the amount of change from entry to exit, or the amount of time they are held. Over a period of time, there are only a few profitable trades for any given trade profile. Everyone developing systems that will hold trades for one to five days or one to two percent will locate the same profitable trades no matter what pattern or entry technique they are using. Every successful trade removes some inefficiency and makes future profitability less likely (**The markets are very nearly efficient**).
 
 The trading system that results from the design, testing, and validation provides a single set of trades with single mean, single standard deviation, single terminal wealth, single maximum drawdown. These results will be repeated as the system is traded only if future prices are exactly the same as the historical series used during development. In order to estimate profit potential and risk it is important to consider the distribution of potential results.
 
 The model does not include any position sizing - that is handled in trading management. The trading management sections of this book discuss a new and unique technique, _dynamic position sizing_, and introduce a new metric of system health, _safe-f_.
 
 # Chapter 02. Risk and Risk Tolerance
-Risk is the risk of drawdown in the balance of the account.
+Risk is the risk of drawdown in the balance of the account. The primary reason traders stop trading is that they experience a drawdown larger than they anticipated, larger than they can afford, larger than their risk tolerance.
+
+## Measurement and Management
+Measurement of risk and management of risk are related. Management is system design and position sizing. Measurement of risk helps us understand the tisk inherent with the combination of:
+* the issue being traded
+* accuracy of the trading system
+* holding period
+* intra-trade visibility
+
+## Drawdown Defined
+**Drawdown** is defined as the drop in account equity, measured as a percentage relative to the highest equity achieved prior to the drawdown. A system's equity is either at a new high, or it is in a drawdown. The gain needed to recover from a drawdown is greater than the loss that caused the drawdown. 
+
+$$Drawdown=max \left( \frac{max\;equity-actual\;equity}{max\;equity},\;0\right)$$
+
+Assume you are trading a system, it has an open long position, and the price of your issue is falling. What is the minimum period of time you are willing to hold through without taking a subjective action? One of the definitive aspects of using a quantitative sustem is that all of the rules are in the system. When the system issues a buy, a long position is taken, and it is held until the system issues a sell. So, the answer to "what is the minimum period of time you are willing to hold through" must be "until the system issues the exit". What does that imply?
+
+Since drawdown can increase rapidly over a multi-day market decline, that period must be short enough that price changes, including drawdown, within it can be ignored. I recommend the minimum period between potential changes to position be no longer than one trading day.
+
+> Drawdown é uma merda que cresce rápido. Então o sistema deve ser projetado para reavaliar as posições diariamente (ou menos tempo). 
+
+## Maximum Adverse Excursion (MAE)
+Maximum Adverse Excursion (MAE) is a measure of the most unfavorable point in a trade. MAE is a measure of risk we acknowledge. Similar to MAE, maximum favorable excursion (MFE) records the most favorable price. In a long trade, it is the highest high. **When using mark-to-market, whenever there is a new MFE and it establishes a new high for the account equity, adjust the equity to reflect that gain.**
+
+$$MAE=max \left(\frac{entry-low}{entry},\;0\right)$$
+
+Every trade has its own MAE, computed and reported daily. The accumulated drawdown spans trades and measures the highest marked-to-market bankable equity to lowest market-to-market equity. Your goal in trading the system is to determine the proper maximum safe position size, on a trade-by-trade basis, so the accumulated MAE rarely exceeds your risk tolerance. 
+
+## Mark-to-Market Equivalence
+From a mathematical perspective, the net equity change from a sequence of trades is identical whether the trades are considered as complete trades or as sequences of marked-to-market days. From a trading management perspective, marking-to-market daily gives finer resolution to the performance of the system and the opportunity to make subjectiv trading decisions, should they become necessary. From a trading system design perspective, marking-to-market daily transforms every system, no matter how often it buys and sells, into a system that has 252 daily results every year.
+
+Although the trades extend over multiple days, the system design and system management focus is on the mark-to-market period - daily.
+
+This does not imply changing positions every day. It does imply evaluating every day, and willingness to change positions daily. **In terms of changes to account equity and drawdown, an n-day trade is equivalent to n one-day trades**.
+
+## Risk Tolerance
+
+For a given set of trades, maximum drawdown is highly dependent on position size. There are many alternative methods of determining position size. **I recommend using fixed fraction as the position sizing technique**.
+
+> Drawdown avalia a perda na conta de capital. MAE avalia a perda em um trade. O MAE é o drawdown aplicado ao trade. Através do position sizing convertemos o impacto do MAE em impacto de Drawdown. Se um determinado modelo tem mais chance de resultar em um grande MAE, então quanto maior o position sizing maior o risco de sofrer um grande drawdown. 
+
+In terms of changes to account equity and drawdown, an n-day trade is equivalent to n one-day trades. From a trading sustem design perspective, marking-to-market daily transforms every system, no matter how often it buys and sells, into a system that has 252 daily results every year.
+
+## Risk Tolerance
+Every trader or trading company has a level of risk tolerance. It is the level of drawdown that, when reached or exceeded, causes the trader to accept that the system is broken and must be taken offline. Risk tolerance has four parameters:
+* Account size (the initial balance)
+* Forecast Horizon (how far into the future we look)
+* Maximum Drawdown (level at which the system is taken offline)
+* Degree of certainty 
+
+A trading system was designed, coded, and tested using daily end-of-day data for the period 01/01/1999 through 01/01/2012. Validation (the test with out-of-sample data for generalization) produced a set of 506 trades for the 13 year period. That set of trades was used as the _best estimate_ of future performance. Assuming that future performance is similar to that of the best estimate, a two year forecast horzon will have about 78 trades. A monte carlo simulation was coded. 
+
+## Position Size - safe-f
+There many alternative methods of determining position size. I recommend using fixed fraction as the position sizing technique. For a given set of trades, maximum drawdown is highly dependent on position size. **Safe-f** is position size. It is recalculated after every trade and used to determine the size of the next trade. We simulate to estimate the position size related to desired maximum drawdown level and degree of certainty. 
 
 # C03
 
 # C04
 
-# C05
+# Chapter 05. Issue Selection
 
-# Chapter 06. Model Development
+# Chapter 06. Model Development 
 ## Introduction
 There are two approaches to trading system development:
 * **Indicator-based:** compute an indicator, then observe price changes that follow.
-* **Machine learning:** observe a notable price change, then identify patterns that precede.
+* **Machine learning:** observe a notable price change, then identify patterns that precede.{ref}'target'
 
 There are two modeling processes involved in trading system development: 
 * **Developing the trading system:** it is developing the rules, identifying the patterns, analyzing the trades found in historical data, and validating the system.
@@ -277,3 +325,6 @@ Connors, L. A., & Alvarez, C. (2012). How markets really work: A quantitative gu
 
 
 
+
+
+[def]: 41
