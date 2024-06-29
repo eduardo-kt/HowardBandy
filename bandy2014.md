@@ -9,6 +9,9 @@ This book is about trading using quantitative techniques together with technical
 * Our process will be designing and verifying the system, them monitoring its performance and determining the maximum safe position size.
 * Our metrics will be account growth, normalized for risk. 
 
+The trading system has two distinct components:
+* **Trading System Development** handles issue and data selection; and design, testing, and validation of the trading model. 
+* **Trading System Management** focuses on monitoring the health of the system being traded, estimating risk, determining positio size, estimating profit potential, and making the trades.
 
 The purpose of a trading system is to recognize an inefficiency in price, then make trades that capture that inefficiency. A trading system is a combination of a model and some data. The primary data series is a time-ordered sequence of prices of the issue being traded. The model is a logic which try to recognize patterns that precede profitable trading opportunities. 
 
@@ -33,53 +36,85 @@ Measurement of risk and management of risk are related. Management is system des
 * intra-trade visibility
 
 ## Drawdown Defined
-**Drawdown** is defined as the drop in account equity, measured as a percentage relative to the highest equity achieved prior to the drawdown. A system's equity is either at a new high, or it is in a drawdown. The gain needed to recover from a drawdown is greater than the loss that caused the drawdown. 
+**Drawdown** is defined as the drop in account equity, measured as a percentage relative to the highest equity achieved prior to the drawdown. A system's equity is either at a new high, or it is in a drawdown. Most systems are in drawdowns most of time (70 to 90% of the time is not unusual). **Drawdown is related to equity curve**.
 
 $$Drawdown=max \left( \frac{max\;equity-actual\;equity}{max\;equity},\;0\right)$$
 
-Assume you are trading a system, it has an open long position, and the price of your issue is falling. What is the minimum period of time you are willing to hold through without taking a subjective action? One of the definitive aspects of using a quantitative sustem is that all of the rules are in the system. When the system issues a buy, a long position is taken, and it is held until the system issues a sell. So, the answer to "what is the minimum period of time you are willing to hold through" must be "until the system issues the exit". What does that imply?
+Assume you are trading a system, it has an open long position, and the price of your issue is falling. What is the minimum period of time you are willing to hold through without taking a subjective action? From a quantitative trading perspective, the right answer is "until the system issues the exit". What does that imply?
 
-Since drawdown can increase rapidly over a multi-day market decline, that period must be short enough that price changes, including drawdown, within it can be ignored. I recommend the minimum period between potential changes to position be no longer than one trading day.
-
-> Drawdown é uma merda que cresce rápido. Então o sistema deve ser projetado para reavaliar as posições diariamente (ou menos tempo). 
+Drawdown can increase rapidly over a multi-day market decline, so, the minimum holding period must be short enough that price changes, including drawdown, within it can be ignored. I recommend the minimum period between potential changes to position be no longer than one trading day.
 
 ## Maximum Adverse Excursion (MAE)
-Maximum Adverse Excursion (MAE) is a measure of the most unfavorable point in a trade. MAE is a measure of risk we acknowledge. Similar to MAE, maximum favorable excursion (MFE) records the most favorable price. In a long trade, it is the highest high. **When using mark-to-market, whenever there is a new MFE and it establishes a new high for the account equity, adjust the equity to reflect that gain.**
+Maximum Adverse Excursion (MAE) is a measure of the most unfavorable point in a trade. MAE is a measure of risk we acknowledge. **MAE is related to trades**.
 
 $$MAE=max \left(\frac{entry-low}{entry},\;0\right)$$
 
+For a multi-day trade, the MAE of the trade depends on how much of the intra-trade price we want to acknowledge. The adverse excursion for a long trade is the difference between the highest intra-trade equity, marked-to-market each day at some price (e.g. the day's close), and that day's low. **If intra-day prices are invisible**, the adverse excursion is the difference between the highest close, marked-to-market daily, and the day's close.
+
+### MAE for a Series of Trades
+There is a similaity between a price bar, say a daily bar, and a trade. Each has an open, high, low, and close. Imagne that the opening price of the bar is the entry price of a trade and the closing price is the exit price. In this interpretation, the trade's high is its MFE and the trade's low is its MAE. 
+
+Each trade is a series of days, each of which has its own high and low. Drawdown for a series of trades could be measured relative to:
+* Intra-day high price (use intra-day high and low prices)
+* Intra-trade high equity (use intra-trade daily close price)
+* Closed-trade high equity (use trade close price)
+
+### Accumulated MAE (AMAE)
 Every trade has its own MAE, computed and reported daily. The accumulated drawdown spans trades and measures the highest marked-to-market bankable equity to lowest market-to-market equity. Your goal in trading the system is to determine the proper maximum safe position size, on a trade-by-trade basis, so the accumulated MAE rarely exceeds your risk tolerance. 
 
 ## Mark-to-Market Equivalence
-From a mathematical perspective, the net equity change from a sequence of trades is identical whether the trades are considered as complete trades or as sequences of marked-to-market days. From a trading management perspective, marking-to-market daily gives finer resolution to the performance of the system and the opportunity to make subjectiv trading decisions, should they become necessary. From a trading system design perspective, marking-to-market daily transforms every system, no matter how often it buys and sells, into a system that has 252 daily results every year.
+From a mathematical perspective, the net equity change from a sequence of trades is identical whether the trades are considered as complete trades or as sequences of marked-to-market days (the cumulative gain for the sequence of days for the entire trade sequence). From a trading management perspective, marking-to-market daily gives finer resolution to the performance of the system and the opportunity to make subjective trading decisions, should they become necessary (e.g. taken the system offline). From a trading system design perspective, marking-to-market daily transforms every system, no matter how often it buys and sells, into a system that has 252 daily results every year. [Chapter 06](#chapter-06-model-development) describe how convert impulse signals to state signals.
 
 Although the trades extend over multiple days, the system design and system management focus is on the mark-to-market period - daily.
 
 This does not imply changing positions every day. It does imply evaluating every day, and willingness to change positions daily. **In terms of changes to account equity and drawdown, an n-day trade is equivalent to n one-day trades**.
 
 ## Risk Tolerance
+Risk tolerance is the level of drawdown that, when reached or exceeded, causes the trader to accept that the system is broken and must be taken offline.
 
-For a given set of trades, maximum drawdown is highly dependent on position size. There are many alternative methods of determining position size. **I recommend using fixed fraction as the position sizing technique**.
-
-> Drawdown avalia a perda na conta de capital. MAE avalia a perda em um trade. O MAE é o drawdown aplicado ao trade. Através do position sizing convertemos o impacto do MAE em impacto de Drawdown. Se um determinado modelo tem mais chance de resultar em um grande MAE, então quanto maior o position sizing maior o risco de sofrer um grande drawdown. 
-
-In terms of changes to account equity and drawdown, an n-day trade is equivalent to n one-day trades. From a trading sustem design perspective, marking-to-market daily transforms every system, no matter how often it buys and sells, into a system that has 252 daily results every year.
-
-## Risk Tolerance
-Every trader or trading company has a level of risk tolerance. It is the level of drawdown that, when reached or exceeded, causes the trader to accept that the system is broken and must be taken offline. Risk tolerance has four parameters:
+A statement of risk tolerance has four parameters:
 * Account size (the initial balance)
 * Forecast Horizon (how far into the future we look)
-* Maximum Drawdown (level at which the system is taken offline)
-* Degree of certainty 
+* Maximum Drawdown (level at which the system is taken offline. Individual traders might be willing to accept 20% or less)
+* Degree of certainty (change level of having maximum drawdown)
 
-A trading system was designed, coded, and tested using daily end-of-day data for the period 01/01/1999 through 01/01/2012. Validation (the test with out-of-sample data for generalization) produced a set of 506 trades for the 13 year period. That set of trades was used as the _best estimate_ of future performance. Assuming that future performance is similar to that of the best estimate, a two year forecast horzon will have about 78 trades. A monte carlo simulation was coded. 
+Illustrating the case: a trading system was designed, coded, and tested using daily end-of-day data for the period 01/01/1999 through 01/01/2012. Validation produced a set of 506 trades for the 13 year period. That set of trades was used as the _best estimate_ of future performance. Assuming that future performance is similar to that of the best estimate, a two year forecast horizon will have about 78 trades. A monte carlo simulation was coded. 
+
+The fixed fraction technique was used for position sizing (recommended technique). The fraction value is determined interactively (with monte carlo simulation). The fraction was adjusted in order to find the value where there was a 5% change (degree of certainty) that the maximum drawdown would exceed 20%.
+
+The maximum drawdown for each try in a monte carlo simulation (e.g. each of 1000 tries) was recorded, then sorted into bins 0.5% wide. Then we design the cumulative distribution function (**CDF**). To form the CDF, beginning t the leftmost bin of the histogram of the pmf, compute the running sum of percentages. 
 
 ## Position Size - safe-f
-There many alternative methods of determining position size. I recommend using fixed fraction as the position sizing technique. For a given set of trades, maximum drawdown is highly dependent on position size. **Safe-f** is position size. It is recalculated after every trade and used to determine the size of the next trade. We simulate to estimate the position size related to desired maximum drawdown level and degree of certainty. 
 
-# C03
+There are many alternative methods of determining position size. I recommend using fixed fraction as the position sizing technique. For a given set of trades, maximum drawdown is highly dependent on position size. As the fraction of the account used for each trade is increased, maximum drawdown also increases. 
 
-# C04
+**Safe-f** is position size. It is recalculated after every trade and used to determine the size of the next trade. We simulate to estimate the position size related to desired maximum drawdown level and degree of certainty. If the set of trades change the risk of drawdown changes, and safe-f changes. 
+
+When using mark-to-market evaluation, safe-f is computed at that same frequency - daily. Daily intra-trade changes are added to the set of trades. If an intra-trade drawdown develops, safe-f will drop, indicating to the trader to lighten position. **This is a dynamic position sizing technique.**
+
+The maximum drawdown from each of the 1000 simulaton runs described above was recorded, then sorted into bins 0.5% wide. The Cumulative Distribution Function (CDF) is more useful for our purposes. 
+
+Equity of the trading account also depends on position size. Final equity is relative to initial equity. Also note that as the probability of a large final equity account increases with position size, the magnitude of the potential loss of account equity also increases.
+
+## Using Final Equity as a Metric
+It is tempting to use final equity, terminal wealth, or compound annual rate of return (CAR) - all equivalent metris - to evaluate system performance. The difficulty is that the distribution of final equity expands quite rapidly as position size increases.
+
+## Evaluating Market-to-Market Equivalence
+
+The trading system code was modified so its output included a series of daily price changes along wiht the trade listing. The 506 trades covered 1151 days. The simulation to forecast a two year period used 177 days. Nothing else was changed.
+
+We should hope for results that are close, but we should not expect perfect agreement. For one thing, replacing trades by days destroyed whatever serial correlation existed between the days in trades. For another, simulations usually produce results thar differ slightly from run to run.
+
+The advantages of marking to market daily - increased control over changes in position, increased number of data points per year, less distortion at the boundaries of evaluation periods - easily compensate for slight differences in forecast of safe-f, drawdown, and final equity.
+
+Recall that safe-f (position sizing) is computed so that the risk of a 20% drawdown is 5%. We can dewcribe this as normalizing for risk. When normalized forrisk, the profit potential of alternative trading systems can be compared directly. 
+
+# Chapter 03. Programming Environments
+Quantitative technical analysts use precisely defined logical and  mathmatical expressions to identify signals and trades. There is no alternative. You must understand the techniques and the associated math. You must be able to read, write, and execute computer programs. 
+
+As we approach quantitative analysis from two different perspectives, we need two different programming environments. One for traditional trading system development, computation of indicators, and generation of buy and sell signals. The other for data science and machine learning.
+
+# Chapter 04. Data
 
 # Chapter 05. Issue Selection
 
