@@ -115,8 +115,124 @@ Quantitative technical analysts use precisely defined logical and  mathmatical e
 As we approach quantitative analysis from two different perspectives, we need two different programming environments. One for traditional trading system development, computation of indicators, and generation of buy and sell signals. The other for data science and machine learning.
 
 # Chapter 04. Data
+The final step in developmen and use of a trading system is trading. Every trade is because the rules have identified a pattern in the data. Fisrt in data used to develop the system; them in the current, as yet unseen, data used to trade. Development data must have sequences of patterns followed by price changes similar to those being sought in the trading data.
+
+In order to be useful in training, data must contain instances of the pattern. 
 
 # Chapter 05. Issue Selection
+It an issue tradable? The best issues to trade combine four characteristics:
+* Adequate profit potential (some price variation)
+* Absence of extreme adverse price changes (not to much price variation)
+* Existence of detectable signal patterns (not too efficient)
+* Sufficiently liquid so you can exit your entire position any minute of any day without substantially affecting the bid-ask spread.
+
+The complete trading system consists of the model and the data series. Even before we begin model development, we can determine how much profit is potentially available by analyzing the data series itself.
+
+## Risk and Profit Potential
+There is quantifiable risk inherent in any data series. All trades, winners as well as losers, have adverse excursins that contribute to the drawdown.
+* Given a data series and two variables - holding period and system accuracy - we can estimate the risk inherent in the series.
+* Given the risk inherent in the series and your personal statement of risk tolerance, we can determine safe-f.
+* Given safe-f, we can estimate profit potential.
+
+## Simulation Outline
+The analysis is done using a monte carlo simulator. We are choosing trades that sum a total of two years of long exposure, however many trades that requires and however much time that covers. The major control variables:
+* Your risk tolerance (say a maximum 5% chance of drawdown greater than 20% over a 2 year horizon)
+* The issue being tested (Say SPY. We need daily closing prices data)
+* Any time period longer than the forecast period can be used (more is better. Say 1999 through 2014)
+* The holding period of each trade in days (any value up to the length of the forecast is valid. Say 5 days).
+* Accuracy of the trading system (say 0.65).
+* The number of simulation runs (say 1000)
+
+The simulation works as follows:
+1. Set the control variables.
+2. Select a daily price series.
+3. Given the holding period, examine every day as an entry day. Positions will be taken market on close, at the closing price. Look ahead the number of days of the holding period. That will be the exit day. If the closing price on the exit day is higher, mark this entry day as a "gainer" entry day; otherwise it is a "loser" entry day. 
+4. Divide the number of days in the forecast period by the holding period, giving the number of trades.
+5. Set the fraction used for each trade to 1.00.
+
+For each of the required number of simulations runs, repeat the following sequence for as many trades as are needed to complete the forecast horizon: 
+1. Pick a random number (uniform, 0.00 to 1.00) to determine whether the next trade will be a winner of a loser. Over the course of many runs, the proportion of winning trades matches the trade accuracy you want to study. 
+2. Frokm whichever list (gainers or losers) was chosen, select a trade entry day at random. Note the entry price. Buy as many shares as you can with the fraction of equity allowed.
+3. In the sequence they occur in the historical price series, process the trade day-by-day. Keep daily track of (the simulator must report):
+    * Intra-day drawdown, measured using daily high and low.
+    * Intra-trade drawdown, measured using mark-to-market daily closing price.
+    Trade drawdown, measured from the trade open to trade close.
+    * Account equity (value of shares held plus cash)
+
+Terminal Wealth Relative (TWR), TWR, Final equity, compound annual rate of return (CAR), and number of years (N), are related by these formulas:
+$$TWR = \frac{Final\;Equity}{Initial\;Equity}$$
+$$TWR = (1+CAR)^{N}$$
+$$CAR=exp\left(\frac{ln(TWR)}{N}\right)-1$$
+
+The risk tolerance requires intra-trade marked-to-market daily drawdown at the 95th percentile to be no greater than 20 percent. You do want to coordinate your risk tolerance with the fraction used and take the largest positions that are safe (a.k.a. safe-f). **We are not judging the system profitability. We are just setting the position size according to the accepted risk tolerance level**.
+
+Drawdown increases as holding period increases and/or trade accuracy decreases. When drawdown increases safe-f decreases. 
+
+## Profit Potential
+Given the parameters (system accuracy, holding period, maximum intra-trade drawdown, and maximum safe fraction) we can estimate the potential profit. That is, tranding the selected issue for two years of exposure, using a yet-to-be-defined model that results in trades that are held for the holding period of which the tested system accuracy, we can compute the distribution of final equity and associated CAR.
+
+The CAR actually experienced will depend on the specific trades, but if the future resembles the past, estimates can be read from the distribution of CAR. 
+
+The 50th percentile is the median. The interquartile range is another useful metric. It is the difference between the values at the 25th percentile and those at the 75th percentile. It is typical for CAR75 to be 1 or 2 times CAR25 with CAR50 about at their midpoint. Any large differences should be checked.
+
+CAR25 is the compound annual rate of return at the 25th percentile of the cumulative distribution of profit. CAR25 of the risk-normalized distribution of profit is as close to a universal objective function as I have found.
+
+## Holding Longer
+There are many reasons for holding positions longer than a few days. You may have read or heard an anecdote where a large profit was made as a result of holding a position for a long time. Large profits improve any trading system. But limiting losses is more critical than achieving gains. As holding periods increase, adverse price movements increase in proportion to the square root of the relative increasing in hodling period, just from the random changes in price. For example: with a 5 day holding period and 4% risk of drawdown, increasing the holding period in 4 times (20 days) will increase intra-trade drawdown to 8% ($\sqrt{4}\times4=8$).
+
+My preference is shifting from portfolios to more focused systems. Each system taking a single direction in a single issue. Select a few issues that have attractive risk and profit potential base on your criteria, develop a system for each, then manage trading of each separately. Allocate most of your trading account to the system that is performing best.
+
+## Estimating Profit Potential
+For a given set of trades, risk (as measured by drawdown) depends on the sequence of trades. The position size - the fraction of the doolar amount allocated to a system that is used to take a position for each of that system's trade - affects both equity growth and drawdown. Assuming the system has a positive expectation, increasing position size results in faster equity growth, a higher final equity balance, and higher drawdown. If the position size is too high, drawdown will cause bankruptcy and end trading. We want to estimate the highest position size - the largest fraction - that can be used while keeping drawdown within tolerable limits.
+
+A monte carlo simulation will give that estimate.
+
+The technique described in [Chapter 2](#chapter-02-risk-and-risk-tolerance) - monitoring and accumulating adverse price excursions - is used to compute the drawdown of a sequence fo trades.
+
+Drawdown can be recognized at three levels:
+* intra-day
+* intra-trade
+* trade
+
+Using daily price bars and marking to market at the close of every day, intra-trade drawdown is the level this program uses to determine safe-f.
+
+The simulation is straight-forward:
+1. State risk tolerance. 
+2. Choose a data series and date range.
+3. State holding period and trading accuracy.
+4. Create or import a "best estimate" set of trades.
+5. Search for safe-f:
+    1. Pick an initial estimate of the fraction.
+    2. Generate many trade sequences.
+    3. Compare estimated risk from the trades with risk tolerance from the statement.
+    4. Adjust the fraction and repeat until the estimated risk matches the risk tolerance.
+
+The program listed here generates the set of trades based on trading accuracy and holding period. Alternatively, a set of real or hypothetical trades could be imported.
+
+Begin with a statement of risk tolerance. Say it is a limit of a 5% chance of a drawdown of equity greater than 20%, measured from highest equity to date, marked-to-market using daily closing prices, over the period of a 2 year forecast. 
+
+Choose the holding period, say 5 days. Specify a desired trading accuracy, say 65 percent.
+
+The trade generation and trade-by-trade performance process is as follows:
+
+For every possible entry day, note the entry and exit prices. Look into the future and note the exit price at the end of the holding period. Assign a label f either "gainer" or "loser" to the entry day.
+
+If you are working with 10 years of daily data, there are 2520 possible entry days. Adjust for the boundary at the end of the test period. Either use 2515 entry days to ensure that every trade entered will be completed within the test data; or use all 2520 entry days, and allow the final 5 days to look into the subsequent period.
+
+Divide the lenght of the forecast period by the length of the holding period, returning an integer. That result is the number of trades needed to cover the forecast period. You will need 100 5-day trades to cover the 504 days in two years. 
+
+Each trade sequence / equity curve will be a sequence of 100 trades, each trade drawn at random using "sampling with replacement" from the best estimate set.
+
+Add trades (winners or losers) to the sequence randomly based on the trading accuracy (is the percent of winners). Determine the size of the trade by the fraction being used.
+
+For a system that is long or flat, a winning trade is one where the exit price is higher than the entry price - a "gainer".
+
+Whenever you need a trade to add to the sequence, begin with a random choice of "gainer" or "loser" with "gainer" chosen 65% of the time. Given the resulting category, select any entry day at random. Determine the size of the trade by the fraction being used.
+
+Generate many (say 1000 runs) such trade sequences, each covering two years of long exposure (chosen forecast period). For each sequence, compute and remember the metrics: final equity, maximum drawdown, and whatever else is of interest. Sort by maximum drawdown and note the value at the 95th percentile. If it is about 20%, the fraction is safe-f. If it is not, adjust the fraction and repeat generating a new set of 1000 sequences. 
+
+When the fraction is correct so that the 95th percentile maximum drawdown matches the stated risk tolerance, use the final equity value from each sequence to construct the distribution of final equity. Report the values for the 25th, 50th, and 75th percentile. 
+
 
 # Chapter 06. Model Development 
 ## Introduction
@@ -161,7 +277,7 @@ for i in range(1,len(Bottom) - 1):
 ```
 
 The outline of the analysis:
-1. Identify trades with daily prices: (Compute zigzag or some other indicator of your choice, Identify entry/exit, Identify trade and store it in an array.
+1. Identify trades with daily prices: Compute zigzag or some other indicator of your choice, Identify entry/exit, Identify trade and store it in an array.
 2. Analyze performance. Using the array of trades, perform Monte Carlo analysis to assess risk, normalize for risk, determine safe-f, estimate profit, including CAR25.
 
 This procedure defines an upper limit to profitability. 
