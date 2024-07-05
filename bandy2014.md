@@ -135,7 +135,7 @@ It an issue tradable? The best issues to trade combine four characteristics:
 The complete trading system consists of the model and the data series. Even before we begin model development, we can determine how much profit is potentially available by analyzing the data series itself.
 
 ## Risk and Profit Potential
-There is quantifiable risk inherent in any data series. All trades, winners as well as losers, have adverse excursins that contribute to the drawdown.
+There is quantifiable risk inherent in any data series. All trades, winners as well as losers, have adverse excursions that contribute to the drawdown.
 * Given a data series and two variables - holding period and system accuracy - we can estimate the risk inherent in the series.
 * Given the risk inherent in the series and your personal statement of risk tolerance, we can determine safe-f.
 * Given safe-f, we can estimate profit potential.
