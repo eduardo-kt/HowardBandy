@@ -11,7 +11,7 @@ This book is about trading using quantitative techniques together with technical
 
 The trading system has two distinct components:
 * **Trading System Development** handles issue and data selection; and design, testing, and validation of the trading model. 
-* **Trading System Management** focuses on monitoring the health of the system being traded, estimating risk, determining positio size, estimating profit potential, and making the trades.
+* **Trading System Management** focuses on monitoring the health of the system being traded, estimating risk, determining position size, estimating profit potential, and making the trades.
 
 The purpose of a trading system is to recognize an inefficiency in price, then make trades that capture that inefficiency. A trading system is a combination of a model and some data. The primary data series is a time-ordered sequence of prices of the issue being traded. The model is a logic which try to recognize patterns that precede profitable trading opportunities. 
 
@@ -37,6 +37,8 @@ Measurement of risk and management of risk are related. Management is system des
 
 ## Drawdown Defined
 **Drawdown** is defined as the drop in account equity, measured as a percentage relative to the highest equity achieved prior to the drawdown. A system's equity is either at a new high, or it is in a drawdown. Most systems are in drawdowns most of time (70 to 90% of the time is not unusual). **Drawdown is related to equity curve**.
+
+![Drawdown](resources\drawdown.png)
 
 $$Drawdown=max \left( \frac{max\;equity-actual\;equity}{max\;equity},\;0\right)$$
 
@@ -78,11 +80,15 @@ A statement of risk tolerance has four parameters:
 * Maximum Drawdown (level at which the system is taken offline. Individual traders might be willing to accept 20% or less)
 * Degree of certainty (change level of having maximum drawdown)
 
+
+
 Illustrating the case: a trading system was designed, coded, and tested using daily end-of-day data for the period 01/01/1999 through 01/01/2012. Validation produced a set of 506 trades for the 13 year period. That set of trades was used as the _best estimate_ of future performance. Assuming that future performance is similar to that of the best estimate, a two year forecast horizon will have about 78 trades. A monte carlo simulation was coded. 
 
 The fixed fraction technique was used for position sizing (recommended technique). The fraction value is determined interactively (with monte carlo simulation). The fraction was adjusted in order to find the value where there was a 5% change (degree of certainty) that the maximum drawdown would exceed 20%.
 
 The maximum drawdown for each try in a monte carlo simulation (e.g. each of 1000 tries) was recorded, then sorted into bins 0.5% wide. Then we design the cumulative distribution function (**CDF**). To form the CDF, beginning t the leftmost bin of the histogram of the pmf, compute the running sum of percentages. 
+
+![risk](resources\risktolerance.png)
 
 ## Position Size - safe-f
 
@@ -172,6 +178,8 @@ Drawdown increases as holding period increases and/or trade accuracy decreases. 
 Given the parameters (system accuracy, holding period, maximum intra-trade drawdown, and maximum safe fraction) we can estimate the potential profit. That is, tranding the selected issue for two years of exposure, using a yet-to-be-defined model that results in trades that are held for the holding period of which the tested system accuracy, we can compute the distribution of final equity and associated CAR.
 
 The CAR actually experienced will depend on the specific trades, but if the future resembles the past, estimates can be read from the distribution of CAR. 
+
+![CAR](resources\cdffinalequity.png)
 
 The 50th percentile is the median. The interquartile range is another useful metric. It is the difference between the values at the 25th percentile and those at the 75th percentile. It is typical for CAR75 to be 1 or 2 times CAR25 with CAR50 about at their midpoint. Any large differences should be checked.
 
