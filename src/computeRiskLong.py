@@ -24,6 +24,8 @@ FRACTION: float = 1.00
 FORECAST_HORIZON: int = 504 # number of trading days in forecast horizon
 NUMBER_FORECASTS: int = 10 # simulation runs
 
+# Print Initial statements
+
 print(f'''
     +----------------------------------------------+
     | Nem Simulation Run                           |
@@ -42,38 +44,29 @@ Forecast Horizon:    {FORECAST_HORIZON}
 Number Forecasts:    {NUMBER_FORECASTS}
         ''')
 
-print('\n\n\tNew simulation run ')
-print('\tTesting profit potential for long positions\n ')
-print(f'Issue:\t\t\t{ISSUE}')
-print(f'Dates:\t\t\t{START_DATE.strftime("%d %b %Y")}')
-print(f' to:\t\t\t{END_DATE.strftime("%d %b %Y")}')
-print(f'Hold days:\t\t{HOLD_DAYS}')
-print(f'System Accuracy:\t{SYSTEM_ACCURACY:.2f}')
-print(f'DD 95 limit:\t\t{DD95_LIMIT:.2f}')
-print(f'Forecast Horizon:\t{FORECAST_HORIZON}')
-print(f'Number forecasts:\t{NUMBER_FORECASTS}')
-print(f'Initial Equity:\t\t{INITIAL_EQUITY}')
-
-# -------------------------------------------#
-# Variables used for simulation
+# Get data
 
 qt = yf.download(tickers= ISSUE, start= START_DATE, end= END_DATE, interval='1d', progress= False)
 
-# print(qt.shape)
-# print(qt.head())
+# Number of days in data
+nrows = len(qt)
 
+# Get Close prices
+qtC = qt['Close']
 
-nrows = qt.shape[0]
-print(f'Number of rows:\t\t{nrows}')
-
-qtC = qt.Close
-
+# Get number of trades and number of days
 number_trades = math.floor(FORECAST_HORIZON / HOLD_DAYS) # must be integer 
 number_days = math.floor(number_trades * HOLD_DAYS) # must be integer
 
-print(f'Number of days: \t{number_days}')
-print(f'Number of trades:\t{number_trades}')
-
+# Print  days in period, trades and trading days in forecast horizon
+print(f'''
++----------------------------------------------------+
+| Number of days in Period:\t\t\t{nrows} |
+| Number of trading days in Forecast Horizon:\t {number_days} |
+| Number of trades in Forecast Horizon:\t\t {number_trades} |
++----------------------------------------------------+
+      '''
+)
 
 a1 = int(number_days + 1)
 # these arrays are the number of days in the forecast
