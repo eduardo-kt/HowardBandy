@@ -32,16 +32,16 @@ print(f'''
     | Testing Profit Potential for long Positions: |
     +----------------------------------------------+
 
-Initial Equity:      {INITIAL_EQUITY}
-Issue:               {ISSUE}
+Initial Equity:      {INITIAL_EQUITY:20}
+Issue:               {ISSUE:>20}
 Period:
-     from:           {START_DATE.strftime("%d %b %Y")}
-     to:             {END_DATE.strftime("%d %b %Y")}
-Holding Days:        {HOLD_DAYS}
-System Accuracy:     {SYSTEM_ACCURACY:.2f}
-Drawdown 95 Limit:   {DD95_LIMIT:.2f}
-Forecast Horizon:    {FORECAST_HORIZON}
-Number Forecasts:    {NUMBER_FORECASTS}
+     from:           {START_DATE.strftime("%d %b %Y"):>20}
+     to:             {END_DATE.strftime("%d %b %Y"):>20}
+Holding Days:        {HOLD_DAYS:>20}
+System Accuracy:     {SYSTEM_ACCURACY:20.2f}
+Drawdown 95 Limit:   {DD95_LIMIT:>20.2f}
+Forecast Horizon:    {FORECAST_HORIZON:>20}
+Number Forecasts:    {NUMBER_FORECASTS:>20}
         ''')
 
 # Get data
