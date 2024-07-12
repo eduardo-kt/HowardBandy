@@ -11,18 +11,18 @@ import time
 
 
 # set control variables
-DD95_LIMIT: float = 0.20 
+DD95_LIMIT: float = 0.20
 ACCURACY_TOLERANCE: float = 0.005
 ISSUE: str = 'spy'
 DATA_SOURCE: str = 'yahoo'
-START_DATE: datetime = datetime(1999,1,1)
-END_DATE: datetime = datetime(2012,1,1)
+START_DATE: datetime = datetime(1999, 1, 1)
+END_DATE: datetime = datetime(2012, 1, 1)
 HOLD_DAYS: int = 5
 SYSTEM_ACCURACY: float = .65
 INITIAL_EQUITY: float = 1_00_000.0
 FRACTION: float = 1.00
-FORECAST_HORIZON: int = 504 # number of trading days in forecast horizon
-NUMBER_FORECASTS: int = 10 # simulation runs
+FORECAST_HORIZON: int = 504  # number of trading days in forecast horizon
+NUMBER_FORECASTS: int = 10  # simulation runs
 
 # Print Initial statements
 
@@ -46,7 +46,8 @@ Number Forecasts:    {NUMBER_FORECASTS:>20}
 
 # Get data
 
-qt = yf.download(tickers= ISSUE, start= START_DATE, end= END_DATE, interval='1d', progress= False)
+qt = yf.download(tickers=ISSUE, start=START_DATE, end=END_DATE,
+                 interval='1d', progress=False)
 
 # Number of days in data
 nrows = len(qt)
@@ -55,7 +56,7 @@ nrows = len(qt)
 qtC = qt['Close']
 
 # Get number of trades and number of days
-number_trades = math.floor(FORECAST_HORIZON / HOLD_DAYS) # must be integer 
+number_trades = math.floor(FORECAST_HORIZON / HOLD_DAYS)  # must be integer
 number_days = math.floor(number_trades * HOLD_DAYS) # must be integer
 
 # Print  days in period, trades and trading days in forecast horizon

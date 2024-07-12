@@ -121,7 +121,7 @@ Everyone has a personal tolerance for risk. Every trading system has some risk. 
 1. ~~The results are too good~~. Keep trading until one of the other reasons to stop happens.
 2. The results are not worth the effort.
 3. The results are not worth the stress.
-4. You make enough money. No matter how good a system is, there is always a risk of serious loss. <span style="color:aquamarine; font-weight: bold">When you has reached your goal, you should retire.</span>
+4. You make enough money. No matter how good a system is, there is always a risk of serious loss. <span style="color:#9db288; font-weight: bold">When you has reached your goal, you should retire.</span>
 5. There is a serious drawdown. The primary reason people stop trading a system.
 
 Do not continue to trade a system that has entered a serious drawdown expecting that it will recover. It may recover on its own; it may require readjustment; or may be permanently broken and never work again. Take it offline and either observe it until recent paper-trade results demonstrate that it is healthy again, or send it back to development. **The correct position size for a system that is broken is zero.**
@@ -162,8 +162,6 @@ A system's equity is either at a new high, or it is in a drawdown. Most systems 
 Continuing to trade a system that is in a drawdown requires that you have confidence in your system. In order to apply the pattern recognition, risk control, and position sizing techniques described in later chapters, you must be prepared to hold your open positions until the system issues the exit. What does that imply?
 
 Drawdown can increase rapidly over a multi-day market decline, so, the minimum holding period must be short enough that price changes, including drawdown, within it can be ignored. I recommend the minimum period between potential changes to position be no longer than one trading day.
-
-$$Drawdown=max \left( \frac{max\;equity-actual\;equity}{max\;equity},\;0\right)$$
 
 ## Maximum Adverse Excursion (MAE)
 Maximum Adverse Excursion (MAE) is a measure of the most unfavorable point in a trade, or in a period of time. MAE is a measure of risk we acknowledge. <span style="color:magenta; font-weight:bold"> MAE is related to trades.</span>
@@ -242,8 +240,6 @@ A statement of risk tolerance has four parameters:
 * Maximum Drawdown (level at which the system is taken offline. Individual traders might be willing to accept 20% or less. Trades preferring longer holding periods must be prepared to either accept higher risk or trade at a smaller position size).
 * Degree of certainty (change level of having maximum drawdown)
 
-
-
 Illustrating the case: a trading system was designed, coded, and tested using daily end-of-day data for the period 01/01/1999 through 01/01/2012. **Validation** produced a set of 506 trades for the 13 year period. That set of trades was used as the _best estimate_ of future performance. Assuming that future performance is similar to that of the best estimate, a two year forecast horizon will have about 78 trades. A monte carlo simulation was coded. 
 
 The fixed fraction technique was used for position sizing (recommended technique). The fraction value is determined interactively (with monte carlo simulation). The fraction was adjusted in order to find the value where there was a 5% change (degree of certainty) that the maximum drawdown would exceed 20%.
@@ -296,7 +292,13 @@ The final step in developmen and use of a trading system is trading. Every trade
 In order to be useful in training, data must contain instances of the pattern. 
 
 # Chapter 05. Issue Selection
-It an issue tradable? The best issues to trade combine four characteristics:
+It an issue tradable? The answer is in three parts:
+* How much **risk** is there?
+* How much **profit** is available?
+* Can we develop a **system** to extract the profit?
+
+## Market Research
+The best issues to trade combine four characteristics:
 * Adequate profit potential (some price variation)
 * Absence of extreme adverse price changes (not to much price variation)
 * Existence of detectable signal patterns (not too efficient)
@@ -311,52 +313,90 @@ There is quantifiable risk inherent in any data series. All trades, winners as w
 * Given safe-f, we can estimate profit potential.
 
 ## Simulation Outline
-The analysis is done using a monte carlo simulator. We are choosing trades that sum a total of two years of long exposure, however many trades that requires and however much time that covers. The major control variables:
-* Your risk tolerance (say a maximum 5% chance of drawdown greater than 20% over a 2 year horizon)
+The analysis is done using a monte carlo simulator. We are choosing trades that sum a total of two years of long exposure, however many trades that requires and however much time that covers.
+
+> Imagine you are alternately long and flat, then squeeze out the flat periods, resulting in two years of long trades. This is the **forecast horizon**.
+
+The major control variables:
+* Your [risk tolerance](#risk-tolerance-1) (say a maximum 5% chance of drawdown greater than 20% over a 2 year horizon)
 * The issue being tested (Say SPY. We need daily closing prices data)
-* Any time period longer than the forecast period can be used (more is better. Say 1999 through 2014)
+* Any time period longer than the **forecast horizon** can be used (more is better. Say 1999 through 2014)
 * The holding period of each trade in days (any value up to the length of the forecast is valid. Say 5 days).
 * Accuracy of the trading system (say 0.65).
-* The number of simulation runs (say 1000)
+* The number of simulation runs (say 1000).
 
 The simulation works as follows:
 1. Set the control variables.
 2. Select a daily price series.
 3. Given the holding period, examine every day as an entry day. Positions will be taken market on close, at the closing price. Look ahead the number of days of the holding period. That will be the exit day. If the closing price on the exit day is higher, mark this entry day as a "gainer" entry day; otherwise it is a "loser" entry day. 
-4. Divide the number of days in the forecast period by the holding period, giving the number of trades.
+4. Divide the number of days in the forecast horizon by the holding period, giving the number of trades.
 5. Set the fraction used for each trade to 1.00.
 
 For each of the required number of simulations runs, repeat the following sequence for as many trades as are needed to complete the forecast horizon: 
 1. Pick a random number (uniform, 0.00 to 1.00) to determine whether the next trade will be a winner of a loser. Over the course of many runs, the proportion of winning trades matches the trade accuracy you want to study. 
-2. Frokm whichever list (gainers or losers) was chosen, select a trade entry day at random. Note the entry price. Buy as many shares as you can with the fraction of equity allowed.
-3. In the sequence they occur in the historical price series, process the trade day-by-day. Keep daily track of (the simulator must report):
+2. From whichever list (gainers or losers) was chosen, select a trade entry day at random. Note the entry price. Buy as many shares as you can with the fraction of equity allowed.
+3. In the sequence they occur in the historical price series, process the trade day-by-day. Keep daily track of:
     * Intra-day drawdown, measured using daily high and low.
     * Intra-trade drawdown, measured using mark-to-market daily closing price.
-    Trade drawdown, measured from the trade open to trade close.
+    * Trade drawdown, measured from the trade open to trade close.
     * Account equity (value of shares held plus cash)
 
-Terminal Wealth Relative (TWR), TWR, Final equity, compound annual rate of return (CAR), and number of years (N), are related by these formulas:
+At the completion of those trades, the simulator reports the three drawdown metrics and the final equity. 
+
+<img src=resources\monte_carlo_metrics.png>
+
+**Legend**: maximum intra-day drawdown (Max IDDD); maximum intra-trade drawdown (Max ITDD) this is the metric we want to hold to 20%; maximum trade drawdown (Max TRDD); final equity (EqAtClose); compound annual rate of return (CAR).
+
+## Calculating CAR
+Terminal Wealth Relative (TWR), Final equity, compound annual rate of return (CAR), and number of years (N), are related by these formulas:
 $$TWR = \frac{Final\;Equity}{Initial\;Equity}$$
 $$TWR = (1+CAR)^{N}$$
 $$CAR=exp\left(\frac{ln(TWR)}{N}\right)-1$$
 
-The risk tolerance requires intra-trade marked-to-market daily drawdown at the 95th percentile to be no greater than 20 percent. You do want to coordinate your risk tolerance with the fraction used and take the largest positions that are safe (a.k.a. safe-f). **We are not judging the system profitability. We are just setting the position size according to the accepted risk tolerance level**.
+The risk tolerance requires intra-trade marked-to-market daily drawdown at the 95th percentile to be no greater than 20 percent.
+> If results for all 1000 runs (monte carlo simulation) were listed and sorted by Max ITDD, we want the first 950 to have values less than 0.20 (max drawdown risk tolerance) and the final 50 to be greater. There is no advantage in having the final 50 be less than 0.20, a situation that would occur only if the fraction of available equity used for each trade was lower than the maximum safe-f. Intentionaly using a lower fraction does lower risk, but it lowers profit even more. 
 
-Drawdown increases as holding period increases and/or trade accuracy decreases. When drawdown increases safe-f decreases. 
+You do want to coordinate your risk tolerance with the fraction used and take the largest positions that are safe (a.k.a. safe-f). **We are not judging the system profitability. We are just setting the position size according to the accepted risk tolerance level**.
+
+> This does not mean that a system that is 65% accurate and holds trades five days cannot be profitably traded. It does mean that, in order to avoid unaceptable drawdowns, only a fraction of the available funds can be safely used (**not the full fraction**). The remainder must remain in a risk free account to act as a ballast.
+
+## Drawdown as a Function of Holding Period
+* Drawdown increases as holding period increases.
+    * Profit potential increases as holding period is reduced.
+* Drawdown increases as trade accuracy decreases.
+    * Profit potential increases as trade accuracy increases.
 
 ## Profit Potential
 Given the parameters (system accuracy, holding period, maximum intra-trade drawdown, and maximum safe fraction) we can estimate the potential profit. That is, tranding the selected issue for two years of exposure, using a yet-to-be-defined model that results in trades that are held for the holding period of which the tested system accuracy, we can compute the distribution of final equity and associated CAR.
 
+
+<img src=resources\cdf_spy.png>
+
 The CAR actually experienced will depend on the specific trades, but if the future resembles the past, estimates can be read from the distribution of CAR. 
 
-![CAR](resources\cdffinalequity.png)
-
-The 50th percentile is the median. The interquartile range is another useful metric. It is the difference between the values at the 25th percentile and those at the 75th percentile. It is typical for CAR75 to be 1 or 2 times CAR25 with CAR50 about at their midpoint. Any large differences should be checked.
+The 50th percentile is the median. The interquartile range is another useful metric. It is the difference between the values at the 25th percentile and those at the 75th percentile. Results are equally likely to be within this range as to be outside it to one extreme or the other. It is typical for CAR75 to be 1 or 2 times CAR25 with CAR50 about at their midpoint. Any large differences should be checked.
 
 CAR25 is the compound annual rate of return at the 25th percentile of the cumulative distribution of profit. CAR25 of the risk-normalized distribution of profit is as close to a universal objective function as I have found.
 
+## Risk of being Short
+We hear that being short is dangerous. That is riskier than being long.
+> There may be other reasons for not taking short positions, but riskiness is not one of them. Being short is inherently safer than being long. 
+
+## What the Prospector Found (extend the analysis)
+Before spending the effort trying to develop a model to use with a data series, we want some assurance the resulting system has the possibility of satisfactory performance. Recall that we want a combination of:
+* Enough variability to give opportunity for profitable trades (CAR25 above risk free return).
+* Enough stability that sharp price changes are infrequent (risk tolerance threshold).
+* Enough history to assess performance in rinsing and falling markets (analize available data).
+* Enough liquidity to be able to exit a position easily.
+
 ## Holding Longer
 There are many reasons for holding positions longer than a few days. You may have read or heard an anecdote where a large profit was made as a result of holding a position for a long time. Large profits improve any trading system. But limiting losses is more critical than achieving gains. As holding periods increase, adverse price movements increase in proportion to the square root of the relative increasing in hodling period, just from the random changes in price. For example: with a 5 day holding period and 4% risk of drawdown, increasing the holding period in 4 times (20 days) will increase intra-trade drawdown to 8% ($\sqrt{4}\times4=8$).
+
+## Portfolios
+The ideas on which portfolios are based are:
+* diversification
+* mean-variance optimization
+* rotate to whatever is rising in price
 
 My preference is shifting from portfolios to more focused systems. Each system taking a single direction in a single issue. Select a few issues that have attractive risk and profit potential base on your criteria, develop a system for each, then manage trading of each separately. Allocate most of your trading account to the system that is performing best.
 
