@@ -213,11 +213,11 @@ print(f'CAR50:\t\t\t{CAR_50:.2f} ')
 print(f'CAR75:\t\t\t{CAR_75:.2f}')
 
 # Save equity curve to disc
-np.savetxt('account_balance.csv', account_balance, delimiter= ',')
+np.savetxt('account_balance.csv', account_balance, delimiter=',')
 
 # Save CDF data to disc
-np.savetxt('FC_maxIT_DD.csv', FC_max_IT_DD, delimiter= ',')
-np.savetxt('FCTr.csv', FC_tr_eq, delimiter= ',')
+np.savetxt('FC_maxIT_DD.csv', FC_max_IT_DD, delimiter=',')
+np.savetxt('FCTr.csv', FC_tr_eq, delimiter=',')
 
 # Plot maximum drawdown
 for i in range(a1):

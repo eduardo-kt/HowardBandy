@@ -456,28 +456,49 @@ When the fraction is correct so that the 95th percentile maximum drawdown matche
 ## Introduction
 There are two approaches to trading system development:
 * **Indicator-based:** compute an indicator, then observe price changes that follow.
-* **Machine learning:** observe a notable price change, then identify patterns that precede.{ref}'target'
+* **Machine learning:** observe a notable price change, then identify patterns that precede.
+
+The purpose of the model is to accept time series data that represent trades, proces that data searching for patterns that precede profitable trading opportunities, learn those patterns, and issue orders to buy, sell, short, and cover in response to live real-time or end-of-day data.
+
+> The quality of the model is judge by its usefulness in live trading.
+
+The two approaches share a considerable amount. From the perspective of trading management, there is no difference.
+
+> _Developing or discovering high quality models is difficult. The markets are nearly efficient. The barriers to entry are low. Everyone is looking for the same profitables trades. Every profitable trade removes some of the inefficiency the system was designed to find._ 
+
+## Two Processes to be Modeled
+
 
 There are two modeling processes involved in trading system development: 
 * **Developing the trading system:** it is developing the rules, identifying the patterns, analyzing the trades found in historical data, and validating the system.
 * **Managing trading:** that is deciding whether the system is working or broken, and what size position is best for the next trade.
 
-> _Developing or discovering high quality models is difficult. The markets are nearly efficient. Everyone is looking for the same profitables trades. Every profitable trade removes some of the inefficiency the system was designed to find._ 
-
 ## Aspects of Trading System Model Development
 ### Goal
 The goal of the model - its sole purpose - is to identify profitable trades. Nothing else. 
+
+We definitely need to simplify. We began quantifying our own risk tolerance and quantifying the risk inherent in a data series. The simplifications allow us to work with a limited pool of data series that we know to have reasonable risk and profit potential. But while the number of data series is reduced to a reasonable size, the number of possible models remains nearly uncountable. Simplifications may help limit the scope of the development problem, but they do not address the central questions:
+* Are we finding the best models?
+* Are the signals predictive?
+* What performance can be reasonably expected in the future?
+* Are metrics of system health available?
+
 ### Pattern Recognition
-Every series of trade prices is a combination of signals and noise. 
+Every series of trade prices is a combination of signals and noise. The signal portion of the data contains the patterns our model is designed to recognize. As seen by our model, everything that is not signal is noise - even if it contains profitable signals that could be identified by some other model. 
+
+> If it is easy to pick the signals out of the surrounding noise, we say there is a <span style="color: sienna; font-size:20px">high signal-to-noise ratio</span>.
+
+The stronger the signal-to-noise ratio, the easier it is to identify the patterns, and the more profitable the trades. We are looking for non-stationary, weak signals in a noisy background (read _Signal and the Noise_, by Nate Silver).
 
 ### Data
-When daily data, often described as end-of-day data, is being used, one bar represents the trades made for an entire day.
+When daily data, often described as end-of-day data, is being used, one bar represents the trades made for an entire day. A daily data bar typically has four prices - OHLC.
 ### Trend Following
 No matter which entry technique is used, no matter which patterns are found to be predictive, the trades sought are always trend following. To be profitable, the price at which the position is sold must be higher than the price at which it is bought.
 ### Indicators
 Indicators can be based on anything. They are most useful when they have significant events, such as crossing or bottoms.
 ### Entries and Exits
-A useful development practice is:
+
+> My preference is fro trades that <span style="font-size:20px; color:sienna">occur frequently and hold one to three days.</span> You may be for something different. Whatever it is, a useful development practice is:
 1. Identify the best entry point.
 2. Identify he best exit point.
 3. Evaluate the risk.
@@ -485,6 +506,7 @@ A useful development practice is:
 5. Explore patterns that precede entry and exit.
 6. analyze results when either the entry or exit is not perfect.
 
+The classical lookahead indicator is ZigZag:
 ```python
 # zigzag function: True if Bottom. Buy signals.
 z = zigzag(p, n)
@@ -503,6 +525,8 @@ This procedure defines an upper limit to profitability.
 ### Trading Signals
 * **Impulse signals** mark transitions, such as the beginning or end of a trade. Using impulse signals, one trade is one data point - however many days that trade lasts.
 * **State signals** identify condiions (long, flat, or short). Using state signals, marking to market daily, each day is one data point. 
+
+> One aadvantage to state signals is providing opportunity for finer control of trade management throughout the trade. The health of the system is reevaluated every day at the same time it is marked-to-market. More on this in [Chapter 9](#chapter-09-trading-management).
 
 ### Model Constraints
 Much of the discussion among traders focuses on the definition of the pattern that signals the trades. People describe themselves, or their technique through themselves, as being trend following, mean reverting, seasonal, or pattern traders. To my thinking, we can develop better system if we relax our insistence that entries conform to particular categories. If we want the determining factor of systemm acceptability to be results, rather than the constraints, we must be willing to relax tradition-bound requirements.
@@ -680,7 +704,7 @@ Derman, E. (2011). Models behaving badly: Why confusing illusion with reality ca
 
 Savage, S. L. (2009). The flaw of averages: Why we underestimate risk in the face of uncertainty. Wiley.
 
-Silver, N. (2021). O sinal e o ruído. Intrínseca; silver21.
+Silver, N. (2021). O sinal e o ruído. Intrínseca.
 
 Downey, A. B. (2015). Think Stats: Exploratory data analysis (2. ed). O’Reilly.
 
