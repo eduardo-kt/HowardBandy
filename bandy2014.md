@@ -3,6 +3,92 @@
 **Quantitative Technical Analysis**<br>
 _Howard Bandy_
 
+- [Contents](#contents)
+- [Chapter 01. Introduction](#chapter-01-introduction)
+  - [The Goal](#the-goal)
+  - [The Process](#the-process)
+  - [Two Components of Trading](#two-components-of-trading)
+  - [Position Sizing](#position-sizing)
+  - [Development (trading system development)](#development-trading-system-development)
+    - [The Model](#the-model)
+    - [The Data](#the-data)
+    - [Patterns](#patterns)
+    - [Non-stationary](#non-stationary)
+    - [Synchronization](#synchronization)
+    - [Signal and Noise](#signal-and-noise)
+    - [Learning](#learning)
+    - [Subjectivity and Objective Functions](#subjectivity-and-objective-functions)
+    - [Estimate Distributions of Performance](#estimate-distributions-of-performance)
+  - [Trading Management](#trading-management)
+  - [Risk Tolerance](#risk-tolerance)
+  - [Why Traders Stop Trading](#why-traders-stop-trading)
+  - [Why is so Hard](#why-is-so-hard)
+- [Chapter 02. Risk and Risk Tolerance](#chapter-02-risk-and-risk-tolerance)
+  - [Measurement and Management](#measurement-and-management)
+  - [Drawdown Defined](#drawdown-defined)
+  - [Frequency of Action](#frequency-of-action)
+  - [Maximum Adverse Excursion (MAE)](#maximum-adverse-excursion-mae)
+    - [MAE for a single day](#mae-for-a-single-day)
+    - [MAE for a two-day trade](#mae-for-a-two-day-trade)
+    - [MAE for a multi-day trade](#mae-for-a-multi-day-trade)
+    - [MAE for a Series of Trades](#mae-for-a-series-of-trades)
+    - [Accumulated MAE (AMAE)](#accumulated-mae-amae)
+  - [Mark-to-Market Equivalence](#mark-to-market-equivalence)
+  - [Risk Tolerance](#risk-tolerance-1)
+  - [Position Size - safe-f](#position-size---safe-f)
+  - [Using Final Equity as a Metric](#using-final-equity-as-a-metric)
+  - [Evaluating Market-to-Market Equivalence](#evaluating-market-to-market-equivalence)
+  - [Technique for Risk Management](#technique-for-risk-management)
+  - [Trade Quality](#trade-quality)
+- [Chapter 03. Programming Environments](#chapter-03-programming-environments)
+- [Chapter 04. Data](#chapter-04-data)
+- [Chapter 05. Issue Selection](#chapter-05-issue-selection)
+  - [Market Research](#market-research)
+  - [Risk and Profit Potential](#risk-and-profit-potential)
+  - [Simulation Outline](#simulation-outline)
+  - [Calculating CAR](#calculating-car)
+  - [Drawdown as a Function of Holding Period](#drawdown-as-a-function-of-holding-period)
+  - [Profit Potential](#profit-potential)
+  - [Risk of being Short](#risk-of-being-short)
+  - [What the Prospector Found (extend the analysis)](#what-the-prospector-found-extend-the-analysis)
+  - [Holding Longer](#holding-longer)
+  - [Portfolios](#portfolios)
+  - [Estimating Profit Potential](#estimating-profit-potential)
+- [Chapter 06. Model Development](#chapter-06-model-development)
+  - [Introduction](#introduction)
+  - [Two Processes to be Modeled](#two-processes-to-be-modeled)
+  - [Aspects of Trading System Model Development](#aspects-of-trading-system-model-development)
+    - [Goal](#goal)
+    - [Pattern Recognition](#pattern-recognition)
+    - [Data](#data)
+    - [Trend Following](#trend-following)
+    - [Indicators](#indicators)
+    - [Entries and Exits](#entries-and-exits)
+    - [Trading Signals](#trading-signals)
+    - [Model Constraints](#model-constraints)
+    - [Fitting and Overfitting](#fitting-and-overfitting)
+    - [Objective Function](#objective-function)
+    - [Backtesting](#backtesting)
+    - [Optimization](#optimization)
+    - [Stationarity and Synchronization](#stationarity-and-synchronization)
+    - [Validation](#validation)
+      - [These conditions are required for walk forward to work:](#these-conditions-are-required-for-walk-forward-to-work)
+    - [Some Other Way](#some-other-way)
+  - [Next Chapters](#next-chapters)
+- [Chapter 07. Model Development Indicator Based](#chapter-07-model-development-indicator-based)
+  - [Objective Function](#objective-function-1)
+  - [Select Data Series](#select-data-series)
+  - [System Overview](#system-overview)
+  - [Indicator Selection](#indicator-selection)
+    - [Chart Patterns](#chart-patterns)
+  - [Discovering Tradable Systems](#discovering-tradable-systems)
+  - [Summary](#summary)
+- [Chapter 08. Model Development Machine Learning](#chapter-08-model-development-machine-learning)
+- [Chapter 09. Trading Management](#chapter-09-trading-management)
+- [Chapter 10. Summary and Random Thoughts](#chapter-10-summary-and-random-thoughts)
+- [Bibliography](#bibliography)
+
+
 # Contents
 Chapter 1: [Introduction](#chapter-01-introduction)<br>
 Chapter 2: [Risk and Risk Tolerance](#chapter-02-risk-and-risk-tolerance)<br>
@@ -652,7 +738,7 @@ Because **they are sequence dependent**, these metrics should be avoided:
 You can use **'decathlon'** scoring: select, compute, scale, then add or multiply the metrics.
 
 ## Select Data Series
-Begin with those series that jave passed the risk and profit screen, are very liquid, and easily traded. Prefer those with high safe-f scores and high CAR25 scores. You can use any data series you want, but is easier to develop profitable, safe, tradable system with those characteristics.
+Begin with those series that have passed the risk and profit screen, are very liquid, and easily traded. Prefer those with high safe-f scores and high CAR25 scores. You can use any data series you want, but is easier to develop profitable, safe, tradable system with those characteristics.
 
 ## System Overview
 While there may be a short/flat system for the same data series, I recommend developing long/flat separately first because:
@@ -664,7 +750,8 @@ While there may be a short/flat system for the same data series, I recommend dev
 ## Indicator Selection
 * We expect there about 15 to 50 ideal trades per year. To pick a specific number for discussion, say 24 trades per year.
 * Signals generated by indicators are crossings or turnings. One indicator crosses another indicator, an indicator crosses a critical level, an indicator changes direction, or something similar.
-* The indicator cycle must fit to price data and generates the desirable number of trades. For the trades we hope to identify, choosing a loockback (period between buy and sell) that is shorter than ideal (for example, to identify 24 trades in a year, the lookback period must be about 10 days) is more forgiving than choosing one that is longer than ideal. 
+* The indicator cycle (aka frequency of trade events/signals) must fit to price data and generates the desirable number of trades. For the trades we hope to identify, choosing a loockback (period between buy and sell) that is shorter than ideal (for example, to identify 24 trades in a year, the lookback period must be about 10 days) is more forgiving than choosing one that is longer than ideal. 
+  
 ### Chart Patterns
 Patterns in the sequence and relationship of OHLC for a few bars are easily identified and sometimes reliably precede price changes (for example, three consecutive higher closing prices are often followed by a fall in prices). Be aware that patterns are highly susceptible to overfitting.   
 
